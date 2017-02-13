@@ -1,6 +1,12 @@
 #Clang-format file
 .clang-format
 
+#clion project file
+.idea/
+
+.directory
+.vscode/
+
 #Build dir
 build/
 CMakeCache.txt
