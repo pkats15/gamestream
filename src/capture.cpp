@@ -1,8 +1,5 @@
 #include "capture.hpp"
 
-// TODO compile in split down frame
-// TODO test CLion
-
 extern "C" {
 #include <stdio.h>
 }
