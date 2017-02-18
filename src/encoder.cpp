@@ -1,4 +1,4 @@
-
+#include <chrono>
 #include <encoder.hpp>
 #include "gstypes.hpp"
 
@@ -6,7 +6,7 @@ GSEncoder::GSEncoder(int bitrate, int width, int height, int framerate, AVPixelF
 	av_register_all();
 	codec = avcodec_find_encoder(AV_CODEC_ID_H264);
 	context = avcodec_alloc_context3(codec);
-
+//	context->level=10;
 	//Setup values
 	context->bit_rate = bitrate;
 	context->width = width;
@@ -23,20 +23,26 @@ GSEncoder::GSEncoder(int bitrate, int width, int height, int framerate, AVPixelF
 }
 
 AVFrame* GSEncoder::getFrameFromPixmap(gs_image img) {
+
+	//Convert image data to AVFrame format (data, linesizes)
 	int linesize[4];
 	av_image_fill_linesizes(linesize, AV_PIX_FMT_BGRA, img.width);
 	const uint8_t * data[4] = {img.data};
+
+	//Prepare frame
 	AVFrame *frame = av_frame_alloc();
 	frame->width = img.width;
 	frame->height = img.height;
 	frame->format = context->pix_fmt;
 	av_frame_get_buffer(frame, ALIGN);
 	av_frame_make_writable(frame);
-	av_image_alloc(frame->data, frame->linesize, img.width, img.height, context->pix_fmt, ALIGN);
+
+	//TODO Find if av_image_alloc is necessary (possibly not at all)
+	//av_image_alloc(frame->data, frame->linesize, img.width, img.height, context->pix_fmt, ALIGN);
+
+	//Convert from BGRA (XY_PIXMAP) to YUV420P for encoding
 	struct SwsContext *cont = sws_getContext(img.width, img.height, AV_PIX_FMT_BGRA, img.width, img.height, context->pix_fmt, 0, NULL, NULL, NULL);\
 	sws_scale(cont, data, linesize, 0, img.height, frame->data, frame->linesize);
-	//TODO TEMP
-	frame->pts = 0;
 	return frame;
 }
 
@@ -65,7 +71,7 @@ void GSEncoder::encode(AVFrame *frame, AVPacket *pkt) {
 			fprintf(stderr, "error during encoding\n");
 			exit(1);
 		}
-		printf("encoded frame %3"PRId64" (size=%5d)\n", pkt->pts, pkt->size);
-		av_packet_unref(pkt);
+//		printf("encoded frame %3"PRId64" (size=%5d)\n", pkt->pts, pkt->size);
+//		av_packet_unref(pkt);
 	}
 }

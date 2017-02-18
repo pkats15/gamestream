@@ -1,5 +1,11 @@
 extern "C" {
+
+#ifndef GS_XCB
+#define GS_XCB
 #include "xcb.h"
+#endif
+
+#include <stdlib.h>
 }
 
 #include <ctime>
@@ -16,4 +22,5 @@ public:
 	GSScreenCap (char *server_name, int screen_num);
 	gs_image captureFrame ();
 	xcb_screen_t* getScreen();
+	void freeImage(gs_image img);
 };
