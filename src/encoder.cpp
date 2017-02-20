@@ -46,16 +46,10 @@ AVFrame* GSEncoder::getFrameFromPixmap(gs_image img) {
 	return frame;
 }
 
-void GSEncoder::encodeFrame(AVPacket *pkt, AVFrame *frame) {
-	if (pkt == nullptr) {
-		pkt = av_packet_alloc();
-	}
-	encode(frame, pkt);
-}
-
 //Copied from encode_video.c libav example
 //URL: https://libav.org/documentation/doxygen/master/encode_video_8c-example.html
-void GSEncoder::encode(AVFrame *frame, AVPacket *pkt) {
+void GSEncoder::encodeFrame( AVPacket **pkt, AVFrame *frame) {
+	AVPacket *tmp_pkt = av_packet_alloc();
 	int ret;
 	/* send the frame to the encoder */
 	ret = avcodec_send_frame(context, frame);
@@ -63,7 +57,7 @@ void GSEncoder::encode(AVFrame *frame, AVPacket *pkt) {
 		exit(1);
 	}
 	while (ret >= 0) {
-		ret = avcodec_receive_packet(context, pkt);
+		ret = avcodec_receive_packet(context, tmp_pkt);
 		if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF) {
 			return;
 		}
@@ -71,7 +65,9 @@ void GSEncoder::encode(AVFrame *frame, AVPacket *pkt) {
 			fprintf(stderr, "error during encoding\n");
 			exit(1);
 		}
-//		printf("encoded frame %3"PRId64" (size=%5d)\n", pkt->pts, pkt->size);
+		//printf("encoded frame %3"PRId64" (size=%5d)\n", tmp_pkt->pts, tmp_pkt->size);
+		pkt[tmp_pkt->pts] = av_packet_clone(tmp_pkt);
 //		av_packet_unref(pkt);
 	}
+	true;
 }
