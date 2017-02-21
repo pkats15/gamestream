@@ -11,12 +11,12 @@ GSEncoder::GSEncoder(int bitrate, int width, int height, int framerate, AVPixelF
 	context->bit_rate = bitrate;
 	context->width = width;
 	context->height = height;
-	context->framerate = AVRational {1, framerate};
-	context->time_base = AVRational {framerate, 1};
+	context->framerate = AVRational {framerate, 1};
+	context->time_base = AVRational {1, framerate};
 	context->max_b_frames=1;
 	context->gop_size = 10;
 	context->pix_fmt = format;
-//	context->profile = FF_PROFILE_H264_BASELINE;
+	context->profile = FF_PROFILE_H264_HIGH;
 
 	int err = avcodec_open2(context, codec, NULL);
 	printf("%d\n", err);

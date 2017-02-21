@@ -5,13 +5,11 @@ extern "C" {
 //#include <stdio.h>
 #include <xcb.h>
 }
-
-
 #include "capture.hpp"
 #include "encoder.hpp"
 #include "gstypes.hpp"
 
-#define NUM_OF_FRAMES 600
+#define NUM_OF_FRAMES 60
 
 
 //            (╯°□°）╯︵ ┻━┻
@@ -43,5 +41,6 @@ int main(int argc, char *argv[]) {
 	encoder.encodeFrame(pkt, NULL);
 	//Encode test frame
 	auto p3 = chrono::high_resolution_clock::now();
+
 	printf("%f, %f\n", (p2 - p1) * (1e-6), (p3 - p1) * (1e-6));
 }
