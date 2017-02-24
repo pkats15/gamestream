@@ -12,8 +12,8 @@ extern "C" {
 class GSEncoder {
 private:
 	AVCodec *codec;
-	AVCodecContext *context;
 public:
+	AVCodecContext *context; //Moved from private to public for testing!
 	GSEncoder(int bitrate, int width, int height, int framerate, AVPixelFormat format);
 	AVFrame* getFrameFromPixmap(gs_image img);
 	void encodeFrame(AVPacket **pkt, AVFrame *frame);

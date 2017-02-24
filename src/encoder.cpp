@@ -65,9 +65,9 @@ void GSEncoder::encodeFrame( AVPacket **pkt, AVFrame *frame) {
 			fprintf(stderr, "error during encoding\n");
 			exit(1);
 		}
-		//printf("encoded frame %3"PRId64" (size=%5d)\n", tmp_pkt->pts, tmp_pkt->size);
-		pkt[tmp_pkt->pts] = av_packet_clone(tmp_pkt);
+//		printf("encoded frame %3"PRId64" (size=%5d)\n", tmp_pkt->pts, tmp_pkt->size);
+		//Array index is dts+1 since the first pkt dts is -1
+		pkt[tmp_pkt->dts+1] = av_packet_clone(tmp_pkt);
 //		av_packet_unref(pkt);
 	}
-	true;
 }

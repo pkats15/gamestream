@@ -8,7 +8,7 @@ set(CMAKE_BUILD_TYPE Debug)
 file (GLOB SRC_DIR "*.hpp" "*.cpp")
 add_executable (Gamestream ${SRC_DIR})
 #Include directories and link libs(source, xcb)
-include_directories (${PROJECT_SOURCE_DIR} /usr/include /usr/include/xcb/ /usr/include/libavcodec /usr/include/libavformat /usr/include/c++/6.3.1 /usr/include/libswscale)
+include_directories (${PROJECT_SOURCE_DIR} /usr/include /usr/include/xcb/ /usr/include/libavcodec /usr/include/libavformat /usr/include/libswscale)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -iquote /usr/include/libavutil/")
 if (CMAKE_BUILD_TYPE STREQUAL "Release")

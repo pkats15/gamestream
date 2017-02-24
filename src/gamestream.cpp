@@ -4,18 +4,22 @@
 extern "C" {
 //#include <stdio.h>
 #include <xcb.h>
+#include "avformat.h"
 }
+
+//TODO REMOVE
+//#include "decode_test.hpp" //TESTING
+
 #include "capture.hpp"
 #include "encoder.hpp"
 #include "gstypes.hpp"
 
-#define NUM_OF_FRAMES 60
 
 
 //            (╯°□°）╯︵ ┻━┻
 //|---------------------------------|TODOLIST|---------------------------------|
 //Accepted ticks: v, V, ✔, ✓
-//TODO Fix packet allocation: |✓|
+//TODO Make a simple decoding test: |✓|
 //|----------------------------------------------------------------------------|
 //            (╯°□°）╯︵ ┻━┻
 
@@ -23,8 +27,8 @@ using namespace std;
 
 int main(int argc, char *argv[]) {
 	GSScreenCap cap(NULL, 0);
-	GSEncoder encoder(4000, cap.getScreen()->width_in_pixels, cap.getScreen()->height_in_pixels, 60,
-					  AV_PIX_FMT_YUV420P);
+	GSEncoder encoder((int)1e7/3, cap.getScreen()->width_in_pixels, cap.getScreen()->height_in_pixels, 30,
+					  AV_PIX_FMT_YUV420P); //Found optimal bitrate for 30 fps 1920x1080
 	gs_image img;
 	AVPacket *pkt[NUM_OF_FRAMES];
 	auto p1 = chrono::high_resolution_clock::now();
@@ -41,6 +45,8 @@ int main(int argc, char *argv[]) {
 	encoder.encodeFrame(pkt, NULL);
 	//Encode test frame
 	auto p3 = chrono::high_resolution_clock::now();
-
 	printf("%f, %f\n", (p2 - p1) * (1e-6), (p3 - p1) * (1e-6));
+
+	//TODO REMOVE
+	//decodePkts(pkt, encoder.context); //TESTING
 }
