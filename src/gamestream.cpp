@@ -1,5 +1,6 @@
 #include <iostream>
 #include <chrono>
+#include <capture/gs_capture.hpp>
 
 extern "C" {
 //#include <stdio.h>
@@ -10,43 +11,48 @@ extern "C" {
 //TODO REMOVE
 //#include "decode_test.hpp" //TESTING
 
-#include "capture.hpp"
-#include "encoder.hpp"
 #include "gstypes.hpp"
+#include "encoder.hpp"
+#include "capture/gs_capture.hpp"
 
+//Use X11 capturing class
+#ifdef GS_USE_X11
+#include "capture/x11_capture.hpp"
+#endif
 
 
 //            (╯°□°）╯︵ ┻━┻
-//|---------------------------------|TODOLIST|---------------------------------|
+//|-------------------------------------|TODOLIST|-------------------------------------|
 //Accepted ticks: v, V, ✔, ✓
-//TODO Make a simple decoding test: |✓|
-//|----------------------------------------------------------------------------|
+//TODO Add inheritance to capture.cpp/.hpp and move to separate directory: |✓|
+//|------------------------------------------------------------------------------------|
 //            (╯°□°）╯︵ ┻━┻
 
 using namespace std;
 
 int main(int argc, char *argv[]) {
-	GSScreenCap cap(NULL, 0);
-	GSEncoder encoder((int)1e7/3, cap.getScreen()->width_in_pixels, cap.getScreen()->height_in_pixels, 30,
+	GSScreenCap *cap;
+
+	//TODO Find a better way to support multiple libraries or systems
+#ifdef GS_USE_X11
+	cap = new X11ScreenCap(NULL, 0);
+#endif
+
+	GSEncoder encoder((int)1e7/3, cap->getScreenInfo().width, cap->getScreenInfo().height, 30,
 					  AV_PIX_FMT_YUV420P); //Found optimal bitrate for 30 fps 1920x1080
 	gs_image img;
 	AVPacket *pkt[NUM_OF_FRAMES];
-	auto p1 = chrono::high_resolution_clock::now();
 	int i;
 	for (i = 0; i < NUM_OF_FRAMES; ++i) {
-		img = cap.captureFrame();
+		img = cap->captureFrame();
 		AVFrame *frame = encoder.getFrameFromPixmap(img);
-		cap.freeImage(img);
+		cap->freeImage(img);
 		frame->pts = i;
 		encoder.encodeFrame(pkt, frame);
 		av_frame_free(&frame);
 	}
-	auto p2 = chrono::high_resolution_clock::now();
 	encoder.encodeFrame(pkt, NULL);
 	//Encode test frame
-	auto p3 = chrono::high_resolution_clock::now();
-	printf("%f, %f\n", (p2 - p1) * (1e-6), (p3 - p1) * (1e-6));
-
 	//TODO REMOVE
 	//decodePkts(pkt, encoder.context); //TESTING
 }

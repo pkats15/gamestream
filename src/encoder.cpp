@@ -17,9 +17,7 @@ GSEncoder::GSEncoder(int bitrate, int width, int height, int framerate, AVPixelF
 	context->gop_size = 10;
 	context->pix_fmt = format;
 	context->profile = FF_PROFILE_H264_HIGH;
-
-	int err = avcodec_open2(context, codec, NULL);
-	printf("%d\n", err);
+	avcodec_open2(context, codec, NULL);
 }
 
 AVFrame* GSEncoder::getFrameFromPixmap(gs_image img) {

@@ -1,10 +1,11 @@
-#include "capture.hpp"
+#include "gs_capture.hpp"
 
 extern "C" {
 #include <stdio.h>
 }
 
-GSScreenCap::GSScreenCap (char *server_name, int screen_num) {
+/*
+GSScreenCap::GSScreenCap () {
 	this->screen_num = screen_num;
 	conn = xcb_connect (NULL, 0);
 	const xcb_setup_t *setup = xcb_get_setup (conn);
@@ -32,3 +33,4 @@ xcb_screen_t *GSScreenCap::getScreen(){
 void GSScreenCap::freeImage(gs_image img){
 	free(img.reply);
 }
+*/
