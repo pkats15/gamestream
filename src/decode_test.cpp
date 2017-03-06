@@ -42,4 +42,5 @@ int decodePkts(AVPacket **pkts, AVCodecContext *context){
 	}
 	av_write_frame(fc, NULL);
 	av_write_trailer(fc);
+	return 0;
 }

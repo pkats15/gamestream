@@ -36,7 +36,7 @@ target_compile_definitions(Gamestream PUBLIC ${COMP_DEF})
 #TODO Add finders
 #Include directories and link libs(source, xcb)
 include_directories (${PROJECT_SOURCE_DIR} /usr/include /usr/include/xcb/ /usr/include/libavcodec /usr/include/libavformat /usr/include/libswscale)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -iquote /usr/include/libavutil/ -pthread -std=c++11")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -iquote /usr/include/libavutil/ -pthread -std=c++14")
 
 #Increase optimization level for release builds
 if (CMAKE_BUILD_TYPE STREQUAL "Release")

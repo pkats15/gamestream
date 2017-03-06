@@ -54,7 +54,7 @@ int main (int argc, char *argv[]) {
 				printf("ERR\n");
 			}
 		}
-		this_thread::sleep_for(16ms);
+		this_thread::sleep_for(18ms);
 	}
 	auto t1 = chrono::system_clock::now();
 	printf("TIME: %dms\n", chrono::duration_cast<chrono::milliseconds>(t1-t0));
