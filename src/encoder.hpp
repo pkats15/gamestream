@@ -1,4 +1,5 @@
-
+#ifndef GS_ENCODER
+#define GS_ENCODER
 extern "C" {
 #include "avcodec.h"
 #include "avformat.h"
@@ -15,6 +16,8 @@ private:
 public:
 	AVCodecContext *context; //Moved from private to public for testing!
 	GSEncoder(int bitrate, int width, int height, int framerate, AVPixelFormat format);
-	AVFrame* getFrameFromPixmap(gs_image img);
+	AVFrame* getFrameFromPixmap(struct SwsContext *cont, gs_image img);
 	void encodeFrame(AVPacket **pkt, AVFrame *frame);
 };
+
+#endif

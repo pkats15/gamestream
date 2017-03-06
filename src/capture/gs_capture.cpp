@@ -4,6 +4,43 @@ extern "C" {
 #include <stdio.h>
 }
 
+
+AVFrame* GSScreenCap::getFrameFromPixmap(gs_image *img) {
+
+	// Convert image data to AVFrame format (data, linesizes)
+	int linesize[4];
+	av_image_fill_linesizes (linesize, AV_PIX_FMT_BGRA, img->width);
+	const uint8_t *data[4] = { img->data };
+
+	// Prepare frame
+	AVFrame *frame = av_frame_alloc ();
+	frame->width = img->width;
+	frame->height = img->height;
+	frame->format = AV_PIX_FMT_YUV420P;
+	av_frame_get_buffer (frame, ALIGN);
+	av_frame_make_writable (frame);
+
+	//memcpy (frame->data, data, 4 * sizeof (uint8_t *));
+	//memcpy (frame->linesize, linesize, 8 * sizeof (int));
+	
+	//TODO Find if av_image_alloc is necessary (possibly not at all)
+	//av_image_alloc(frame->data, frame->linesize, img.width, img.height, context->pix_fmt, ALIGN);
+
+	//Convert from BGRA (XY_PIXMAP) to YUV420P for encoding
+
+
+	//auto start = std::chrono::high_resolution_clock::now();
+
+	
+	struct SwsContext *cont = sws_getContext(img->width, img->height, AV_PIX_FMT_BGRA, img->width, img->height, (AVPixelFormat)frame->format, 0, NULL, NULL, NULL);
+	
+	//auto mid = std::chrono::high_resolution_clock::now();
+	sws_scale(cont, data, linesize, 0, img->height, frame->data, frame->linesize);
+	//auto end = std::chrono::high_resolution_clock::now();
+	//printf("%dms %dms enc\n", std::chrono::duration_cast<std::chrono::milliseconds>(mid - start), std::chrono::duration_cast<std::chrono::milliseconds>(end - mid));
+	return frame;
+}
+
 /*
 GSScreenCap::GSScreenCap () {
 	this->screen_num = screen_num;
