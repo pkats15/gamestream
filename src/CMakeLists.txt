@@ -40,8 +40,14 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -iquote /usr/include/libavutil/ -pthread
 
 #Increase optimization level for release builds
 if (CMAKE_BUILD_TYPE STREQUAL "Release")
+#	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ofast")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ofast")
 endif (CMAKE_BUILD_TYPE STREQUAL "Release")
+
+#Debug flags
+if (CMAKE_BUILD_TOOL STREQUAL "Debug")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ggdb -O0")
+endif (CMAKE_BUILD_TOOL STREQUAL "Debug")
 
 link_directories (/usr/lib64 /usr/lib)
 target_link_libraries (Gamestream ${TARGET_LIBS})

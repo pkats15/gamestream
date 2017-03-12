@@ -8,16 +8,20 @@ extern "C" {
 #include "imgutils.h"
 }
 
+#include <mutex>
+
 #define ALIGN 32
 
 class GSEncoder {
 private:
+	std::mutex mut;
 	AVCodec *codec;
+	AVPacket **pkt;
 public:
 	AVCodecContext *context; //Moved from private to public for testing!
-	GSEncoder(int bitrate, int width, int height, int framerate, AVPixelFormat format);
+	GSEncoder(int bitrate, int width, int height, int framerate, AVPixelFormat format, AVPacket **pkt);
 	AVFrame* getFrameFromPixmap(struct SwsContext *cont, gs_image img);
-	void encodeFrame(AVPacket **pkt, AVFrame *frame);
+	void encodeFrame(AVFrame *frame);
 };
 
 #endif

@@ -7,7 +7,7 @@ extern "C"{
 #include <avformat.h>
 #include <avio.h>
 }
-int decodePkts(AVPacket** pkts, AVCodecContext *context);
+int decodePkts(AVPacket** pkts, AVCodecContext *context, int frames);
 AVOutputFormat* getOFormatByName(char *name);
 
 #endif //GAMESTREAM_DECODE_TEST_HPP

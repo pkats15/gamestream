@@ -1,8 +1,7 @@
 #include "gstypes.hpp"
-#include <chrono>
 #include <encoder.hpp>
 
-GSEncoder::GSEncoder (int bitrate, int width, int height, int framerate, AVPixelFormat format) {
+GSEncoder::GSEncoder (int bitrate, int width, int height, int framerate, AVPixelFormat format, AVPacket **pkt) {
 	av_register_all ();
 	codec = avcodec_find_encoder (AV_CODEC_ID_H264);
 	context = avcodec_alloc_context3 (codec);
@@ -18,6 +17,8 @@ GSEncoder::GSEncoder (int bitrate, int width, int height, int framerate, AVPixel
 	context->pix_fmt = format;
 	context->profile = FF_PROFILE_H264_HIGH;
 	avcodec_open2 (context, codec, NULL);
+
+	this->pkt = pkt;
 }
 
 AVFrame* GSEncoder::getFrameFromPixmap (struct SwsContext *cont, gs_image img) {
@@ -37,20 +38,20 @@ AVFrame* GSEncoder::getFrameFromPixmap (struct SwsContext *cont, gs_image img) {
 
 	//memcpy (frame->data, data, 4 * sizeof (uint8_t *));
 	//memcpy (frame->linesize, linesize, 8 * sizeof (int));
-	
+
 	//TODO Find if av_image_alloc is necessary (possibly not at all)
-	//av_image_alloc(frame->data, frame->linesize, img.width, img.height, context->pix_fmt, ALIGN);
+	av_image_alloc(frame->data, frame->linesize, img.width, img.height, context->pix_fmt, ALIGN);
 
 	//Convert from BGRA (XY_PIXMAP) to YUV420P for encoding
 
 
 	//auto start = std::chrono::high_resolution_clock::now();
 
-	
+
 	//struct SwsContext *cont = sws_getContext(img.width, img.height, AV_PIX_FMT_BGRA, img.width,
 	//img.height, context->pix_fmt, 0, NULL, NULL, NULL);
 
-	
+
 	//auto mid = std::chrono::high_resolution_clock::now();
 	sws_scale(cont, data, linesize, 0, img.height, frame->data, frame->linesize);
 	//auto end = std::chrono::high_resolution_clock::now();
@@ -60,10 +61,11 @@ AVFrame* GSEncoder::getFrameFromPixmap (struct SwsContext *cont, gs_image img) {
 
 // Copied from encode_video.c libav example
 // URL: https://libav.org/documentation/doxygen/master/encode_video_8c-example.html
-void GSEncoder::encodeFrame (AVPacket **pkt, AVFrame *frame) {
+void GSEncoder::encodeFrame (AVFrame *frame) {
 	AVPacket *tmp_pkt = av_packet_alloc ();
 	int ret;
 	/* send the frame to the encoder */
+	mut.lock(); //Ensure send & receive doesn't get mixed among threads
 	ret = avcodec_send_frame (context, frame);
 	if (ret < 0) {
 		exit (1);
@@ -71,9 +73,11 @@ void GSEncoder::encodeFrame (AVPacket **pkt, AVFrame *frame) {
 	while (ret >= 0) {
 		ret = avcodec_receive_packet (context, tmp_pkt);
 		if (ret == AVERROR (EAGAIN) || ret == AVERROR_EOF) {
+			mut.unlock();
 			return;
 		} else if (ret < 0) {
 			fprintf (stderr, "error during encoding\n");
+			mut.unlock();
 			exit (1);
 		}
 		//		printf("encoded frame %3"PRId64" (size=%5d)\n", tmp_pkt->pts, tmp_pkt->size);
@@ -81,4 +85,5 @@ void GSEncoder::encodeFrame (AVPacket **pkt, AVFrame *frame) {
 		pkt[tmp_pkt->dts + 1] = av_packet_clone (tmp_pkt);
 		//		av_packet_unref(pkt);
 	}
+	mut.unlock();
 }

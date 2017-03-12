@@ -1,9 +1,6 @@
 
 #include <iostream>
 #include "decode_test.hpp"
-#include <avio.h>
-#include "gstypes.hpp"
-#include "avutil.h"
 
 using namespace std;
 
@@ -17,7 +14,7 @@ AVOutputFormat* getOFormatByName(char *name){
 	return NULL;
 }
 
-int decodePkts(AVPacket **pkts, AVCodecContext *context){
+int decodePkts(AVPacket **pkts, AVCodecContext *context, int frames){
 	AVFormatContext *fc;
 	AVOutputFormat *of;
 	avformat_alloc_output_context2(&fc, NULL, "mp4", "file.mp4");
@@ -29,11 +26,15 @@ int decodePkts(AVPacket **pkts, AVCodecContext *context){
 	stream->id = 0;//fc->nb_streams;
 //	if (fc->oformat->flags & AVFMT_GLOBALHEADER)
 //		context->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;
-
+	
 	stream->index=0;
 	avcodec_parameters_from_context(stream->codecpar, context);
 	avformat_write_header(fc,  NULL);
-	for (int i = 0; i < NUM_OF_FRAMES; ++i) {
+
+	for (int i = 0; i < frames; ++i) {
+		if(pkts[i] ==NULL){
+			continue;
+		}
 		pkts[i]->stream_index=0;
 		//Rescale
 		pkts[i]->dts = av_rescale_q(pkts[i]->dts, context->time_base, stream->time_base);

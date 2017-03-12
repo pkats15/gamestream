@@ -1,8 +1,5 @@
 #include "gs_capture.hpp"
 
-extern "C" {
-#include <stdio.h>
-}
 
 
 AVFrame* GSScreenCap::getFrameFromPixmap(gs_image *img) {
@@ -24,7 +21,8 @@ AVFrame* GSScreenCap::getFrameFromPixmap(gs_image *img) {
 	//memcpy (frame->linesize, linesize, 8 * sizeof (int));
 	
 	//TODO Find if av_image_alloc is necessary (possibly not at all)
-	//av_image_alloc(frame->data, frame->linesize, img.width, img.height, context->pix_fmt, ALIGN);
+	//Not needed since data is already allocated by av_frame_alloc()
+	//av_image_alloc(frame->data, frame->linesize, img->width, img->height, AV_PIX_FMT_YUV420P, ALIGN);
 
 	//Convert from BGRA (XY_PIXMAP) to YUV420P for encoding
 

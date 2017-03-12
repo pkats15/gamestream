@@ -7,6 +7,9 @@
 .directory
 .vscode/
 
+#Notes directory
+notes/
+
 #Build dir
 build/
 CMakeCache.txt
