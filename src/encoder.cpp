@@ -62,6 +62,8 @@ AVFrame* GSEncoder::getFrameFromPixmap (struct SwsContext *cont, gs_image img) {
 // Copied from encode_video.c libav example
 // URL: https://libav.org/documentation/doxygen/master/encode_video_8c-example.html
 void GSEncoder::encodeFrame (AVFrame *frame) {
+	num_of_frames++; //Increment number of frames encoded
+
 	AVPacket *tmp_pkt = av_packet_alloc ();
 	int ret;
 	/* send the frame to the encoder */
@@ -86,4 +88,9 @@ void GSEncoder::encodeFrame (AVFrame *frame) {
 		//		av_packet_unref(pkt);
 	}
 	mut.unlock();
+}
+
+int GSEncoder::getNumOfFrames() {
+	printf("NOF: %d\n", num_of_frames);
+	return num_of_frames;
 }

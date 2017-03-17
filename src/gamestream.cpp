@@ -18,9 +18,7 @@
 //            (╯°□°）╯︵ ┻━┻
 //|-------------------------------------|TODOLIST|-------------------------------------|
 // Accepted ticks: v, V, ✔, ✓
-//TODO Find why it crashes / SEGFAULTS: |✓|
-//TODO Add frame skipping and thread synchronization: |✓|
-//TODO Add encoding thread: |✓|
+//TODO Add thread for encoding: |✓|
 //|------------------------------------------------------------------------------------|
 //            (╯°□°）╯︵ ┻━┻
 
@@ -29,11 +27,12 @@ using namespace std;
 int main (int argc, char *argv[]) {
 	AVPacket *pkt[10000]= {0};
 	X11ScreenCap cap (NULL, 0);
-	GSEncoder encoder (500000000, cap.getScreenInfo().width, cap.getScreenInfo().height, 60, AV_PIX_FMT_YUV420P, pkt); // Found optimal bitrate for 30 fps 1920x1080
-	GSManager man(&cap, &encoder, 6, 60);
+	GSEncoder encoder (500000000, cap.getScreenInfo().width, cap.getScreenInfo().height, 40, AV_PIX_FMT_YUV420P, pkt); // Found optimal bitrate for 30 fps 1920x1080
+	GSManager man(&cap, &encoder, 6, 40);
 	man.start();
-	this_thread::sleep_for(5s);
-	int num_of_frames = man.stop();
+	this_thread::sleep_for(20s);
+	man.stop();
+	int num_of_frames = encoder.getNumOfFrames();
 	decodePkts(pkt, encoder.context, num_of_frames);
 	
 	// this_thread::sleep_for(2s);

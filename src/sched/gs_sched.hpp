@@ -46,10 +46,13 @@ private:
 	GSSchedUnit *units;
 	int thread_num;
 	std::deque<AVFrame*> arr;
+	void encodeQueue();
+	bool running;
+	std::thread encode_thread;
 public:
 	GSManager(GSScreenCap *cap, GSEncoder *enc, int thread_num, int target_fps);
 	void start();
-	int stop(); //Returns the number of encodec frames
+	void stop();
 	void addToEncode(AVFrame *frame);
 };
 

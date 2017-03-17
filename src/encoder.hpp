@@ -17,7 +17,9 @@ private:
 	std::mutex mut;
 	AVCodec *codec;
 	AVPacket **pkt;
+	int num_of_frames;
 public:
+	int getNumOfFrames(); //Return the number of frames in **pkt
 	AVCodecContext *context; //Moved from private to public for testing!
 	GSEncoder(int bitrate, int width, int height, int framerate, AVPixelFormat format, AVPacket **pkt);
 	AVFrame* getFrameFromPixmap(struct SwsContext *cont, gs_image img);
